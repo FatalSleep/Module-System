@@ -16,7 +16,7 @@ namespace ModuleSystem {
         #endregion
 
         #region Constructor
-        ModuleLoader(string directory, bool recursiveImport) {
+        public ModuleLoader(string directory, bool recursiveImport) {
             ImportDirectory = directory;
             RecursiveImport = recursiveImport;
 
