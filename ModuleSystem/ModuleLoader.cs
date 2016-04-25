@@ -62,7 +62,7 @@ namespace ModuleSystem {
             }
         }
 
-        protected bool VerifyModule(Type module) =>
+        protected virtual bool VerifyModule(Type module) =>
             module.IsClass && module.BaseType == typeof(Module);
         #endregion
 
