@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 
 namespace ModuleSystem {
-    public class ModuleLoader {
+    public class ModuleLoader<T> where T : ModuleCore {
         #region Properties
-        public Dictionary<string,ModuleCore> ModuleCores { get; internal set; }
+        public Dictionary<string, T> ModuleCores { get; internal set; }
 
         public HashSet<string> BlackListedModules { get; internal set; }
 
@@ -20,7 +20,7 @@ namespace ModuleSystem {
             ImportDirectory = directory;
             RecursiveImport = recursiveImport;
 
-            ModuleCores = new Dictionary<string, ModuleCore>();
+            ModuleCores = new Dictionary<string, T>();
             BlackListedModules = new HashSet<string>();
         }
         #endregion
@@ -29,14 +29,14 @@ namespace ModuleSystem {
         private bool ImportDirectoryIsValid() {
             try {
                 bool DirectoryExists = Directory.Exists(ImportDirectory);
-                System.IO.Path.GetFullPath(ImportDirectory);
+                Path.GetFullPath(ImportDirectory);
                 return DirectoryExists;
             } catch(Exception) {
                 return false;
             }
         }
 
-        public void ImportModules( bool applyBlackList ) {
+        public void ImportModules(bool applyBlackList) {
             if(!ImportDirectoryIsValid())
                 return;
 
@@ -56,14 +56,20 @@ namespace ModuleSystem {
                         if(VerifyModule(module))
                             verifiedModules.Add(module);
 
-                    ModuleCore core = new ModuleCore(assemblyName, Path.GetFullPath(file), importedAssembly, verifiedModules.AsReadOnly());
+                    T core = (T) Activator.CreateInstance(typeof(T), new object[] { assemblyName, Path.GetFullPath(file), importedAssembly, verifiedModules.AsReadOnly() });
                     ModuleCores.Add(assemblyName, core);
                 }
             }
         }
 
         protected virtual bool VerifyModule(Type module) =>
-            module.IsClass && module.BaseType == typeof(Module);
+            module.IsClass && module.BaseType == typeof(T);
+
+        public void BlacklistModule(T module) =>
+            BlackListedModules.Add(module.AssemblyName);
+
+        public void WhitelistModule(T module) =>
+            BlackListedModules.RemoveWhere(x => x == module.AssemblyName);
         #endregion
 
         #region Internal Exceptions
