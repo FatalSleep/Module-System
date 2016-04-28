@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -27,17 +27,16 @@ namespace ModuleSystem {
         #endregion
 
         #region Load Modules
-        public void LoadModule(Type module) {
+        public virtual void LoadModule(Type module) {
             if(!module.IsSubclassOf(typeof(Module)) || !VerifiedModules.Contains(module))
                 return;
 
-            Module loadedModule = (Module) Activator.CreateInstance(module);
-            LoadedModules.Add(loadedModule);
+            LoadedModules.Add((Module)Activator.CreateInstance(module));
         }
 
-        public void LoadModules() {
+        public virtual void LoadAllModules() {
             foreach(Type module in VerifiedModules)
-                LoadedModules.Add((Module)Activator.CreateInstance(module));
+                LoadModule(module);
         }
         #endregion
     }
