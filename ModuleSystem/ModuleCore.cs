@@ -31,7 +31,9 @@ namespace ModuleSystem {
             if(!module.IsSubclassOf(typeof(Module)) || !VerifiedModules.Contains(module))
                 return;
 
-            LoadedModules.Add((Module)Activator.CreateInstance(module));
+            Module moduleInstance = (Module)Activator.CreateInstance(module);
+            moduleInstance.Info = this;
+            LoadedModules.Add(moduleInstance);
         }
 
         public virtual void LoadAllModules() {
