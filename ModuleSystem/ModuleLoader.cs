@@ -63,7 +63,7 @@ namespace ModuleSystem {
         }
 
         protected virtual bool VerifyModule(Type module) =>
-            module.IsClass && module.BaseType == typeof(T);
+            module.IsClass && module.BaseType == typeof(Module);
 
         public void BlacklistModule(T module) =>
             BlackListedModules.Add(module.AssemblyName);
